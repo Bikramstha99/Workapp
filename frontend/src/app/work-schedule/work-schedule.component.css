@@ -1,0 +1,129 @@
+.work-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.form-row label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #059669;
+}
+
+.primary-btn {
+  background: #059669;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background: #047857;
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.empty {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.schedule-table {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.schedule-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.9fr 0.9fr 0.9fr 1.2fr;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 8px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 13.5px;
+  min-width: 560px;
+}
+
+.schedule-head {
+  font-weight: 700;
+  color: #6b7280;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.secondary-btn {
+  background: #ecfdf5;
+  color: #047857;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.secondary-btn:hover {
+  background: #d1fae5;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.delete-btn:hover {
+  color: #dc2626;
+}

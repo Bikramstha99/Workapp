@@ -1,0 +1,26 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <h1>SplitWork</h1>
+    <p class="subtitle">Split expenses with friends & track your work hours</p>
+  </header>
+
+  <nav class="tabs">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'split-money'"
+      (click)="setTab('split-money')">
+      💰 Split Money
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'work-schedule'"
+      (click)="setTab('work-schedule')">
+      🕒 Work Schedule
+    </button>
+  </nav>
+
+  <section class="tab-content">
+    <app-split-money *ngIf="activeTab === 'split-money'"></app-split-money>
+    <app-work-schedule *ngIf="activeTab === 'work-schedule'"></app-work-schedule>
+  </section>
+</div>

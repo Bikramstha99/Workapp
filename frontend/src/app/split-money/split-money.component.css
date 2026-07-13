@@ -1,0 +1,635 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+.split-money {
+  --board: #2b2e29;
+  --board-edge: #1c1e1a;
+  --chalk: #eef0e8;
+  --chalk-dim: #b9beb2;
+  --chalk-faint: #7d8177;
+  --coin: #e8b84b;
+  --coin-dark: #c99a35;
+  --paid: #7fae6a;
+  --owed: #c1613f;
+  --rule: rgba(238, 240, 232, 0.16);
+
+  display: grid;
+  gap: 28px;
+  /* max-width: 980px; */
+  margin: 0 auto;
+  padding: 20px 20px;
+  font-family: 'Inter', sans-serif;
+  color: var(--chalk);
+}
+
+/* ---------- card / board ---------- */
+
+.card {
+  background: var(--board);
+  border-radius: 6px;
+  padding: 28px 26px;
+  position: relative;
+  box-shadow:
+    0 0 0 10px var(--board-edge),
+    0 0 0 12px rgba(0, 0, 0, 0.35),
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    inset 0 0 60px rgba(0, 0, 0, 0.25);
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.03), transparent 60%),
+    radial-gradient(ellipse at 80% 90%, rgba(255,255,255,0.02), transparent 55%);
+}
+
+.card-header-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.people-card-header-row{
+  display: grid;
+  grid-template-columns: 2fr 1fr 0.2fr;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.card h2 {
+  font-family: 'Kalam', cursive;
+  font-weight: 700;
+  font-size: 1.7rem;
+  letter-spacing: 0.5px;
+  margin: 0 0 20px;
+  color: var(--chalk);
+  text-shadow: 0 0 8px rgba(238,240,232,0.15);
+}
+
+.card h2::after {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 3px;
+  margin-top: 8px;
+  background: var(--coin);
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+
+/* ---------- form ---------- */
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-row label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--chalk-dim);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.form-row input {
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--rule);
+  padding: 8px 2px 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1rem;
+  color: var(--chalk);
+  transition: border-color 0.15s ease;
+}
+
+.form-row input::placeholder {
+  color: var(--chalk-faint);
+  font-style: italic;
+}
+
+.form-row input:focus {
+  outline: none;
+  border-bottom: 1px dashed var(--coin);
+}
+
+.form-row input:focus-visible {
+  outline: 2px solid var(--coin);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------- participants ---------- */
+
+.participants-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+  margin-bottom: 18px;
+  padding-top: 4px;
+}
+
+.participants-grid .full-width {
+  grid-column: 1 / -1;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--chalk-dim);
+  margin-bottom: -2px;
+}
+
+.participants-grid input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--rule);
+  padding: 6px 2px 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--chalk);
+}
+
+.participants-grid input:focus {
+  outline: none;
+  border-bottom: 1px dashed var(--coin);
+}
+
+/* ---------- preview ---------- */
+
+.split-preview {
+  margin: 18px 0 22px;
+  padding: 14px 16px;
+  border: 1px dashed var(--rule);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--chalk-dim);
+  font-family: 'Inter', sans-serif;
+}
+
+.split-preview strong {
+  display: block;
+  margin-top: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.6rem;
+  color: var(--coin);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- buttons ---------- */
+
+.primary-btn {
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--coin);
+  color: #26210f;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: var(--coin-dark);
+}
+
+.primary-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.primary-btn:disabled {
+  background: var(--chalk-faint);
+  color: rgba(0,0,0,0.4);
+  cursor: not-allowed;
+}
+
+.primary-btn:focus-visible {
+  outline: 2px solid var(--chalk);
+  outline-offset: 2px;
+}
+
+.error {
+  margin-top: 12px;
+  color: var(--owed);
+  font-size: 0.85rem;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.error::before {
+  content: '⚠ ';
+}
+
+/* ---------- splits list ---------- */
+
+.empty {
+  color: var(--chalk-faint);
+  font-family: 'Kalam', cursive;
+  font-size: 1.1rem;
+  padding: 20px 0;
+  text-align: center;
+  border: 1px dashed var(--rule);
+  border-radius: 4px;
+}
+
+.split-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.split-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+  border-bottom: 1px dashed var(--rule);
+  cursor: pointer;
+  transition: padding-left 0.15s ease;
+}
+
+.split-item:last-child {
+  border-bottom: none;
+}
+
+.split-item:hover {
+  padding-left: 8px;
+}
+
+.split-item strong {
+  font-family: 'Kalam', cursive;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--chalk);
+}
+
+.split-item .meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--chalk-dim);
+  margin-top: 3px;
+}
+
+.delete-btn {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--chalk-dim);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.delete-btn:hover {
+  border-color: var(--owed);
+  color: var(--owed);
+  background: rgba(193, 97, 63, 0.1);
+}
+
+/* ---------- modal ---------- */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8vh;
+  z-index: 100;
+  animation: fade-in 0.15s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: #f4f1e8;
+  color: #2b2e29;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 26px 26px;
+  border-radius: 2px;
+  position: relative;
+  font-family: 'IBM Plex Mono', monospace;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  animation: drop-in 0.22s cubic-bezier(0.2, 0.8, 0.3, 1);
+  /* torn receipt edge */
+  clip-path: polygon(
+    0% 1%, 4% 0%, 8% 1.5%, 12% 0%, 16% 1.2%, 20% 0%, 24% 1.5%, 28% 0%,
+    32% 1.2%, 36% 0%, 40% 1.5%, 44% 0%, 48% 1%, 52% 0%, 56% 1.5%, 60% 0%,
+    64% 1.2%, 68% 0%, 72% 1.5%, 76% 0%, 80% 1%, 84% 0%, 88% 1.5%, 92% 0%,
+    96% 1%, 100% 0%, 100% 100%, 0% 100%
+  );
+}
+
+@keyframes drop-in {
+  from { transform: translateY(-16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.modal-header h3 {
+  font-family: 'Kalam', cursive;
+  font-size: 1.4rem;
+  margin: 0;
+  color: #2b2e29;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #6b6d63;
+  padding: 2px 6px;
+}
+
+.close-btn:hover {
+  color: var(--owed);
+}
+
+.modal .meta {
+  font-size: 0.8rem;
+  color: #6b6d63;
+  border-bottom: 1px dashed #b8b3a0;
+  padding-bottom: 14px;
+  margin-bottom: 6px;
+}
+
+.participant-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.participant-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dotted #c9c4b0;
+  font-size: 0.88rem;
+}
+
+.participant-list li:last-child {
+  border-bottom: none;
+}
+
+.participant-list span.paid {
+  color: #5c7a4c;
+  text-decoration: line-through;
+  text-decoration-color: #5c7a4c;
+  opacity: 0.75;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid #c9c4b0;
+  color: #2b2e29;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.toggle-btn:hover {
+  border-color: var(--paid);
+  color: var(--paid);
+}
+
+/* ---------- participant selection modal ---------- */
+
+.selection-list {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.selection-list li {
+  border-bottom: 1px dotted #c9c4b0;
+}
+
+.selection-list li:last-child {
+  border-bottom: none;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 2px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.checkbox-row input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-mark {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 1.5px solid #8a8672;
+  border-radius: 3px;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.checkbox-row input:checked + .checkbox-mark {
+  background: var(--paid);
+  border-color: var(--paid);
+}
+
+.checkbox-row input:checked + .checkbox-mark::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid #f4f1e8;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-row input:focus-visible + .checkbox-mark {
+  outline: 2px solid #2b2e29;
+  outline-offset: 2px;
+}
+
+.checkbox-row span.excluded {
+  color: #a9a493;
+  text-decoration: line-through;
+}
+
+.selection-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0;
+  border-top: 1px dashed #b8b3a0;
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+  color: #6b6d63;
+}
+
+.selection-footer strong {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.3rem;
+  color: #2b2e29;
+}
+
+.selection-modal .error {
+  margin-bottom: 12px;
+}
+
+.pay-mode-toggle{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Custom-styled select to match the dark/gold theme */
+.form-row select,
+select[ngModel] {
+  width: 100%;
+  padding: 10px 36px 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #f0ead9;
+  background-color: #2a281f;
+  border: 1px solid #4a4638;
+  border-radius: 6px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  /* custom gold chevron, since native arrows can't be restyled */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23d4a943' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.form-row select:hover,
+select[ngModel]:hover {
+  border-color: #6b6355;
+}
+
+.form-row select:focus {
+  outline: none;
+  border-color: #d4a943;
+  box-shadow: 0 0 0 3px rgba(212, 169, 67, 0.2);
+}
+
+/* style the dropdown options for browsers that allow it (Firefox/Chrome on most OSes) */
+.form-row select option {
+  background-color: #2a281f;
+  color: #f0ead9;
+}
+
+.form-row select option:disabled {
+  color: #8a8375;
+}
+
+.balances-block {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e2da;
+}
+
+.balance-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.balance-total {
+  color: #c0402a;
+  font-weight: 600;
+}
+
+.owes-to-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0 0 0 12px;
+  font-size: 12.5px;
+  color: #6b6355;
+}
+
+.totals-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.totals-table th,
+.totals-table td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+}
+
+.totals-table th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.totals-table td:nth-child(2),
+.totals-table td:nth-child(3) {
+  text-align: right;
+}
+
+.totals-name {
+  font-weight: 500;
+}
+
+.totals-receive {
+  color: #2e7d32;
+}
+
+.totals-pay {
+  color: #d32f2f;
+}
+
+.zero {
+  color: #999;
+}

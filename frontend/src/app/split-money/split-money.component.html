@@ -1,0 +1,202 @@
+<div class="split-money">
+  <div class="card" *ngIf="!activeView">
+    <div class="card-header-row">
+      <h2>Your Splits</h2>
+      <div class="header-actions">
+        <button class="primary-btn" (click)="openView('people')">Add People</button>
+        <button class="primary-btn" (click)="openView('newSplit')">New Split</button>
+      </div>
+    </div>
+
+    <!-- Totals -->
+    <table class="totals-table" *ngIf="personTotals.length">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>To Receive</th>
+          <th>To Pay</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let t of personTotals">
+          <td class="totals-name">
+            {{ t.name }}
+          </td>
+
+          <td
+            class="totals-receive"
+            [class.zero]="t.totalToReceive === 0">
+            {{ t.totalToReceive | number:'1.2-2' }}
+          </td>
+
+          <td
+            class="totals-pay"
+            [class.zero]="t.totalToPay === 0">
+            {{ t.totalToPay | number:'1.2-2' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="empty" *ngIf="!splits.length">No splits yet. Create one above.</p>
+    <div class="split-list">
+      <div class="split-item" *ngFor="let split of splits" (click)="viewSplit(split)">
+        <div class="split-item-main">
+          <div class="split-item-header">
+            <strong>{{ split.Title }}</strong>
+            <span class="meta"> Total {{ split.TotalAmount | number:'1.2-2' }}</span>
+          </div>
+
+          <!-- <ul class="split-owed-list" *ngIf="split.participants?.length">
+            <li *ngFor="let p of split.participants" [class.settled]="p.Paid">
+              <span class="owed-name">{{ p.Name }}</span>
+              <span class="owed-amount">
+                {{ p.AmountOwed | number:'1.2-2' }}
+                <span class="paid-tag" *ngIf="p.Paid">✓ paid</span>
+              </span>
+            </li>
+          </ul> -->
+        </div>
+
+        <button class="delete-btn" (click)="deleteSplit(split.Id, $event)">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- People panel -->
+  <div class="card" *ngIf="activeView === 'people'">
+    <div class="people-card-header-row">
+      <h2>People</h2>
+      <div class="form-row">
+        <input type="text" [(ngModel)]="newPersonName" placeholder="Add a person" (keyup.enter)="addPerson()" />
+        <button class="primary-btn" (click)="addPerson()" [disabled]="peopleLoading">Add</button>
+      </div>
+      <button class="close-btn" (click)="closeView()">✕</button>
+    </div>
+
+    <p class="empty" *ngIf="!people.length">No people yet — add your group above.</p>
+    <div class="split-list">
+      <div class="split-item" *ngFor="let p of people">
+        <div>
+          <strong>{{ p.name }}</strong>
+        </div>
+        <button class="delete-btn" (click)="removePerson(p.id)">✕</button>
+      </div>
+    </div>
+    <button class="primary-btn" (click)="openView('newSplit')" [disabled]="!people.length">
+      Continue to New Split
+    </button>
+  </div>
+
+  <!-- New Split panel -->
+  <div class="card" *ngIf="activeView === 'newSplit'">
+    <div class="card-header-row">
+      <h2>New Split</h2>
+      <button class="close-btn" (click)="closeView()">✕</button>
+    </div>
+
+    <div class="form-row">
+      <label>Title</label>
+      <input type="text" [(ngModel)]="title" placeholder="e.g. Dinner at Cafe" />
+    </div>
+
+    <div class="form-row">
+      <label>Total Amount</label>
+      <input type="number" [(ngModel)]="totalAmount" placeholder="e.g. 1200" min="0" />
+    </div>
+
+    <!-- Paid by -->
+    <div class="form-row full-width" *ngIf="personSelections.length">
+      <label>Paid by</label>
+      <div class="header-actions">
+        <button class="primary-btn me-2" [class.active]="payMode === 'single'" (click)="setPayMode('single')">
+          One person paid
+        </button>
+        <button class="primary-btn" [class.active]="payMode === 'multiple'" (click)="setPayMode('multiple')">
+          Split the payment
+        </button>
+      </div>
+
+      <div class="form-row" *ngIf="payMode === 'single'">
+        <select [(ngModel)]="payerId">
+          <option [ngValue]="null" disabled>Select who paid</option>
+          <option *ngFor="let p of personSelections" [ngValue]="p.id">{{ p.name }}</option>
+        </select>
+      </div>
+
+      <ul class="payer-list" *ngIf="payMode === 'multiple'">
+        <li *ngFor="let pa of payerAmounts">
+          <span>{{ pa.name }}</span>
+          <input type="number" [(ngModel)]="pa.amount" min="0" placeholder="0.00" />
+        </li>
+      </ul>
+
+      <div
+        class="payer-summary"
+        *ngIf="payMode === 'multiple'"
+        [class.mismatch]="paymentRemaining !== 0">
+        <span *ngIf="paymentRemaining === 0">Payments match the total ✓</span>
+        <span *ngIf="paymentRemaining > 0">{{ paymentRemaining | number:'1.2-2' }} left to assign</span>
+        <span *ngIf="paymentRemaining < 0">{{ -paymentRemaining | number:'1.2-2' }} over the total</span>
+      </div>
+    </div>
+
+    <!-- Split between -->
+    <div class="selection-block" *ngIf="personSelections.length">
+      <label class="full-width">Split between</label>
+      <ul class="selection-list">
+        <li *ngFor="let p of personSelections; let i = index">
+          <label class="checkbox-row">
+            <input
+              type="checkbox"
+              [checked]="p.selected"
+              (change)="togglePerson(i)" />
+            <span class="checkbox-mark"></span>
+            <span [class.excluded]="!p.selected">{{ p.name }}</span>
+          </label>
+        </li>
+      </ul>
+    </div>
+
+    <p class="empty" *ngIf="!personSelections.length">
+      No people yet.
+      <a (click)="openView('people')">Add some first</a>.
+    </p>
+
+    <div class="split-preview" *ngIf="totalAmount && selectedCount">
+      Each person pays approx.
+      <strong>{{ amountPerPerson | number: '1.2-2' }}</strong>
+    </div>
+
+    <button
+      class="primary-btn"
+      (click)="createSplitAndReturn()"
+      [disabled]="loading || !personSelections.length">
+      {{ loading ? 'Creating...' : 'Create Split' }}
+    </button>
+
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </div>
+
+  <!-- Split details modal -->
+  <div class="modal-backdrop" *ngIf="selectedSplit" (click)="closeDetails()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ selectedSplit.Title }}</h3>
+        <button class="close-btn" (click)="closeDetails()">✕</button>
+      </div>
+
+      <p class="meta">Total: {{ selectedSplit.TotalAmount | number:'1.2-2' }} across {{ selectedSplit.NumberOfPeople }} people</p>
+
+      <ul class="participant-list">
+        <li *ngFor="let p of selectedSplit.participants">
+          <span [class.paid]="p.Paid">{{ p.Name }} — {{ p.AmountOwed | number:'1.2-2' }}</span>
+          <button class="toggle-btn" (click)="togglePaid(p.Id, p.Paid)">
+            {{ p.Paid ? 'Paid ✓' : 'Mark Paid' }}
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

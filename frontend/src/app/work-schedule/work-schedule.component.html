@@ -1,0 +1,57 @@
+<div class="work-schedule">
+
+  <div class="card">
+    <h2>Clock In</h2>
+
+    <div class="form-row">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="employeeName" placeholder="e.g. Priya" />
+    </div>
+
+    <div class="form-row">
+      <label>Date</label>
+      <input type="date" [(ngModel)]="workDate" />
+    </div>
+
+    <div class="form-row">
+      <label>Notes (optional)</label>
+      <input type="text" [(ngModel)]="notes" placeholder="e.g. Working from office" />
+    </div>
+
+    <button class="primary-btn" (click)="clockIn()" [disabled]="loading">
+      {{ loading ? 'Clocking in...' : 'Clock In' }}
+    </button>
+
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </div>
+
+  <div class="card">
+    <h2>Work Records</h2>
+
+    <p class="empty" *ngIf="!schedules.length">No records yet. Clock in above to get started.</p>
+
+    <div class="schedule-table" *ngIf="schedules.length">
+      <div class="schedule-row schedule-head">
+        <span>Name</span>
+        <span>Date</span>
+        <span>Clock In</span>
+        <span>Clock Out</span>
+        <span>Hours</span>
+        <span></span>
+      </div>
+
+      <div class="schedule-row" *ngFor="let s of schedules">
+        <span>{{ s.EmployeeName }}</span>
+        <span>{{ formatDate(s.WorkDate) }}</span>
+        <span>{{ formatTime(s.ClockIn) }}</span>
+        <span>{{ formatTime(s.ClockOut) }}</span>
+        <span>{{ hoursWorked(s) }}</span>
+        <span class="actions">
+          <button class="secondary-btn" *ngIf="!s.ClockOut" (click)="clockOut(s)">Clock Out</button>
+          <button class="delete-btn" (click)="deleteSchedule(s.Id)">✕</button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>
