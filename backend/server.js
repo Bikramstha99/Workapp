@@ -12,6 +12,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => res.json({ status: 'ok' }));
+
 app.use('/api/split-money', splitMoneyRoutes);
 app.use('/api/work-schedule', workScheduleRoutes);
 app.use('/api/people', peopleRoutes);
