@@ -56,3 +56,4 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 run = ["npm", "start", "--prefix", "backend"]
+build = ["bash", "-c", "cd frontend && npx ng build"]
