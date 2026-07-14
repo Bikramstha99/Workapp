@@ -20,3 +20,7 @@ app.use('/api/people', peopleRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+app.use(cors({
+  origin: ["https://your-vercel-app.vercel.app"],
+  credentials: true
+}));
