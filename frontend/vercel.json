@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npx ng build --configuration production",
+  "outputDirectory": "dist/splitwork-frontend/browser",
   "rewrites": [
     {
       "source": "/(.*)",
