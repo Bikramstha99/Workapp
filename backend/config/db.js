@@ -1,34 +1,14 @@
 require('dotenv').config();
+const { Pool } = require('pg');
 
-const sql = require('mssql/msnodesqlv8');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-const config = {
-  connectionString:
-    `Driver={ODBC Driver 18 for SQL Server};` +
-    `Server=${process.env.DB_SERVER};` +
-    `Database=${process.env.DB_DATABASE};` +
-    `Trusted_Connection=Yes;` +
-    `TrustServerCertificate=Yes;`
-};
-
-console.log(config);
-
-let pool;
-
-async function getPool() {
-  if (pool) return pool;
-
-  try {
-    pool = await sql.connect(config);
-    console.log('Connected to SQL Server ✅');
-    return pool;
-  } catch (err) {
-    console.dir(err, { depth: 10 });
-    throw err;
-  }
-}
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle PostgreSQL client', err);
+});
 
 module.exports = {
-  sql,
-  getPool
+  query: (text, params) => pool.query(text, params),
 };

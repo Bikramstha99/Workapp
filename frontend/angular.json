@@ -45,6 +45,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": { "buildTarget": "splitwork-frontend:build:production" },
             "development": { "buildTarget": "splitwork-frontend:build:development" }

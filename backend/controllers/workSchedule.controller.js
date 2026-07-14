@@ -1,6 +1,6 @@
-const { sql, getPool } = require('../config/db');
+const db = require('../config/db');
 
-// Clock in — creates a new work schedule record for today
+// Clock in — creates a new work schedule record
 async function clockIn(req, res) {
   try {
     const { employeeName, notes, workDate } = req.body;
@@ -8,45 +8,38 @@ async function clockIn(req, res) {
       return res.status(400).json({ message: 'employeeName is required' });
     }
 
-    const pool = await getPool();
-    const parsedDate = new Date(workDate);
-    const result = await pool.request()
-      .input('employeeName', sql.NVarChar, employeeName)
-      .input('workDate', sql.Date, parsedDate)
-      .input('notes', sql.NVarChar, notes || null)
-      .query(`
-        INSERT INTO WorkSchedules (EmployeeName, WorkDate, ClockIn, ClockOut, Notes)
-        OUTPUT INSERTED.Id, INSERTED.ClockIn
-        VALUES (@employeeName, @workDate, GETDATE(), NULL, @notes)
-      `);
+    const result = await db.query(
+      `INSERT INTO workschedules (employee_name, work_date, clock_in, clock_out, notes)
+       VALUES ($1, $2, NOW(), NULL, $3)
+       RETURNING id AS "Id", clock_in AS "ClockIn"`,
+      [employeeName, workDate || null, notes || null]
+    );
 
-        res.status(201).json(result.recordset[0]);
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Error clocking in', error: err.message });
-      }
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error clocking in', error: err.message });
+  }
 }
 
 // Clock out — updates the record with the clock out time
 async function clockOut(req, res) {
   try {
     const { id } = req.params;
-    const pool = await getPool();
 
-    const result = await pool.request()
-      .input('id', sql.Int, id)
-      .query(`
-        UPDATE WorkSchedules
-        SET ClockOut = GETDATE()
-        OUTPUT INSERTED.Id, INSERTED.ClockIn, INSERTED.ClockOut
-        WHERE Id = @id
-      `);
+    const result = await db.query(
+      `UPDATE workschedules
+       SET clock_out = NOW()
+       WHERE id = $1
+       RETURNING id AS "Id", clock_in AS "ClockIn", clock_out AS "ClockOut"`,
+      [id]
+    );
 
-    if (result.recordset.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Record not found' });
     }
 
-    res.json(result.recordset[0]);
+    res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error clocking out', error: err.message });
@@ -56,12 +49,17 @@ async function clockOut(req, res) {
 // Get all work schedule records (most recent first)
 async function getAllSchedules(req, res) {
   try {
-    const pool = await getPool();
-    const result = await pool.request().query(`
-      SELECT * FROM WorkSchedules
-      ORDER BY WorkDate DESC, ClockIn DESC
-    `);
-    res.json(result.recordset);
+    const result = await db.query(
+      `SELECT id AS "Id",
+              employee_name AS "EmployeeName",
+              work_date AS "WorkDate",
+              clock_in AS "ClockIn",
+              clock_out AS "ClockOut",
+              notes AS "Notes"
+       FROM workschedules
+       ORDER BY work_date DESC, clock_in DESC`
+    );
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error fetching schedules', error: err.message });
@@ -72,32 +70,38 @@ async function getAllSchedules(req, res) {
 async function getScheduleById(req, res) {
   try {
     const { id } = req.params;
-    const pool = await getPool();
-    const result = await pool.request()
-      .input('id', sql.Int, id)
-      .query('SELECT * FROM WorkSchedules WHERE Id = @id');
+    const result = await db.query(
+      `SELECT id AS "Id",
+              employee_name AS "EmployeeName",
+              work_date AS "WorkDate",
+              clock_in AS "ClockIn",
+              clock_out AS "ClockOut",
+              notes AS "Notes"
+       FROM workschedules
+       WHERE id = $1`,
+      [id]
+    );
 
-    if (result.recordset.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Record not found' });
     }
-    res.json(result.recordset[0]);
+    res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error fetching schedule', error: err.message });
   }
 }
 
-// Update notes / edit a record manually
+// Update notes on a record
 async function updateSchedule(req, res) {
   try {
     const { id } = req.params;
     const { notes } = req.body;
-    const pool = await getPool();
 
-    await pool.request()
-      .input('id', sql.Int, id)
-      .input('notes', sql.NVarChar, notes || null)
-      .query('UPDATE WorkSchedules SET Notes = @notes WHERE Id = @id');
+    await db.query(
+      'UPDATE workschedules SET notes = $1 WHERE id = $2',
+      [notes || null, id]
+    );
 
     res.json({ message: 'Schedule updated' });
   } catch (err) {
@@ -110,8 +114,7 @@ async function updateSchedule(req, res) {
 async function deleteSchedule(req, res) {
   try {
     const { id } = req.params;
-    const pool = await getPool();
-    await pool.request().input('id', sql.Int, id).query('DELETE FROM WorkSchedules WHERE Id = @id');
+    await db.query('DELETE FROM workschedules WHERE id = $1', [id]);
     res.json({ message: 'Schedule deleted' });
   } catch (err) {
     console.error(err);
@@ -119,11 +122,4 @@ async function deleteSchedule(req, res) {
   }
 }
 
-module.exports = {
-  clockIn,
-  clockOut,
-  getAllSchedules,
-  getScheduleById,
-  updateSchedule,
-  deleteSchedule
-};
+module.exports = { clockIn, clockOut, getAllSchedules, getScheduleById, updateSchedule, deleteSchedule };
